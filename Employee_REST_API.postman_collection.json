@@ -1,0 +1,377 @@
+{
+  "info": {
+    "_postman_id": "10fdfc70-faee-4ff3-a7c7-dfd27a70bee4",
+    "name": "Employee_REST_API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58474187",
+    "_collection_link": "https://go.postman.co/collection/58474187-10fdfc70-faee-4ff3-a7c7-dfd27a70bee4?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Login_with_Valid_Info",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "let jsonData = pm.response.json();\r\nlet Token=jsonData.token;\r\n\r\npm.environment.set(\"Token\", Token);\r\n\r\npm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{Token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"admin123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{MainURL}}/api/auth/login",
+          "host": [
+            "{{MainURL}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login_with_Invalid_Info",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "let jsonData = pm.response.json(); \r\n\r\npm.test(\"Check Invalid user credentials\", function () {\r\n    pm.response.to.have.status(401);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{Token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"a12345\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{MainURL}}/api/auth/login",
+          "host": [
+            "{{MainURL}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create_Employee",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "let prefix = \"0161\";\nlet randomNumber = Math.floor(1000000 + Math.random() * 9000000);\nlet Phone = prefix + randomNumber;\npm.environment.set(\"Phone\", Phone);\n\nlet minSalary = 30000;\nlet maxSalary = 100000;\nlet randomSalary = Math.floor(Math.random() * (maxSalary - minSalary + 1)) + minSalary;\npm.environment.set(\"Salary\", randomSalary);\n\nlet department = [\"Engineering\", \"Marketing\", \"Finance\", \"HR\", \"IT\"];\nlet randomDepartment = department[Math.floor(Math.random() * department.length)];  \npm.environment.set(\"Department\", randomDepartment);\n\nlet position = [\"Developer\", \"Manager\", \"Analyst\", \"HR\", \"Tester\"];\nlet randomPosition = position[Math.floor(Math.random() * position.length)];\npm.environment.set(\"Position\", randomPosition);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "let jsonData = pm.response.json();\r\n\r\nlet Id = jsonData.data.id;\r\nlet FirstName = jsonData.data.firstName;\r\nlet LastName = jsonData.data.lastName;\r\nlet Email = jsonData.data.email;\r\nlet Phone = jsonData.data.phone;\r\nlet Dept = jsonData.data.department;\r\nlet Position = jsonData.data.position;\r\nlet Salary = jsonData.data.salary;\r\n\r\n\r\npm.environment.set(\"Id\", Id)\r\npm.environment.set(\"FirstName\", FirstName)\r\npm.environment.set(\"LastName\", LastName)\r\npm.environment.set(\"Email\", Email)\r\npm.environment.set(\"Phone\", Phone)\r\npm.environment.set(\"Department\", Dept)\r\npm.environment.set(\"Position\", Position)\r\npm.environment.set(\"Salary\", Salary)    \r\n\r\n\r\n\r\n\r\npm.test(\"Employee Data checking successfully\",()=>{\r\n    pm.expect(jsonData.message).to.eql(\"Employee created successfully\")\r\n})"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{Token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"firstName\": \"{{$randomFirstName}}\",\n    \"lastName\": \"{{$randomLastName}}\",\n    \"email\": \"{{$randomFirstName}}@example.com\",\n    \"phone\": \"{{Phone}}\",\n    \"department\": \"{{Department}}\",\n    \"position\": \"Developer\",\n    \"salary\": \"{{Salary}}\" \n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{MainURL}}/api/employees",
+          "host": [
+            "{{MainURL}}"
+          ],
+          "path": [
+            "api",
+            "employees"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get_Employee_Info",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "let jsonData = pm.response.json();\nlet empData = jsonData.data;\n\npm.test(\"Employee is present\", function () {\n    pm.expect(empData).to.not.be.undefined;\n});\n\npm.test(\"Department is correct\", function () {\n    let savedDept = pm.environment.get(\"Department\");\n    pm.expect(empData[0].department).to.eql(savedDept);\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{Token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{MainURL}}/api/employees?ID=98&limit=30",
+          "host": [
+            "{{MainURL}}"
+          ],
+          "path": [
+            "api",
+            "employees"
+          ],
+          "query": [
+            {
+              "key": "ID",
+              "value": "98"
+            },
+            {
+              "key": "limit",
+              "value": "30"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update_Employee_Info",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "let jsonData = pm.response.json();\r\nlet update = jsonData.data;\r\n\r\npm.environment.set(\"Phone\", update.phone);\r\npm.environment.set(\"Position\", update.position);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{Token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"phone\": \"01607006884\",\r\n    \"position\": \"Developer\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{MainURL}}/api/employees/{{Id}}",
+          "host": [
+            "{{MainURL}}"
+          ],
+          "path": [
+            "api",
+            "employees",
+            "{{Id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete_Emloyee",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{Token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "https://crudapi-o7rr.onrender.com/api/employees{{Id}}",
+          "protocol": "https",
+          "host": [
+            "crudapi-o7rr",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "api",
+            "employees{{Id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get_Employee_with_Query_Param",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{Token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{MainURL}}/api/employees?limit=10&email=Violette@example.com",
+          "host": [
+            "{{MainURL}}"
+          ],
+          "path": [
+            "api",
+            "employees"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            },
+            {
+              "key": "phone",
+              "value": "01612871557",
+              "disabled": true
+            },
+            {
+              "key": "email",
+              "value": "Violette@example.com"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "EmployeeId",
+      "value": ""
+    },
+    {
+      "key": "EmployeeName",
+      "value": ""
+    },
+    {
+      "key": "EmployeeEmail",
+      "value": ""
+    },
+    {
+      "key": "EmployeePhone",
+      "value": ""
+    },
+    {
+      "key": "EmployeeDept",
+      "value": ""
+    },
+    {
+      "key": "EmployeePosition",
+      "value": ""
+    },
+    {
+      "key": "EmployeeSalary",
+      "value": ""
+    }
+  ]
+}
